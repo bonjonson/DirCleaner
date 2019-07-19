@@ -21,5 +21,5 @@ def VIDEO_check():
         else:
             print('На других дисках такой папки не существует', '\n')
     return(video)
-
+# вызываем проверку наличия папки
 VIDEO_check()
