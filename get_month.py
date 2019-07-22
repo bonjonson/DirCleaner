@@ -10,6 +10,6 @@ def get_month():
     m = input('Введите номер месяца в двузначном формате: ')
     # m = re.findall('...' + m + '......',VIDEO_check.VIDEO_check())
     for mm in VIDEO_check.VIDEO_check():
-        month = re.match(m, mm)
+        month = re.match(r'...' + m + '......', mm)
         print('Обнаружены следующие объекты: ', month, end = '\n')
     return(month)
