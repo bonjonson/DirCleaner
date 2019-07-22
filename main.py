@@ -1,9 +1,10 @@
 import re
 import os
-import get_disks
-import VIDEO_check
-import get_month
+from get_disks import get_disks
+from VIDEO_check import VIDEO_check
+# from get_month import get_month
+video = []
 
-get_disks.get_disks()
-VIDEO_check.VIDEO_check()
-get_month.get_month()
+get_disks()
+VIDEO_check(video)
+print(video)
