@@ -16,4 +16,3 @@ def VIDEO_check(video):
             # print('На диске ', letter, 'такой папки не существует', '\n')
             continue
     return(video)
-VIDEO_check(video)
