@@ -1,13 +1,33 @@
 import re
 import os
 
-video = []  # тут хранится список архивов в папке %\video
+disks_dict = {}  # test dict
+archive_disks = {}  # тут хранится словарь дисков с архивами
+video = []  # тут хранится список всех архивов в папке %\video
 for_remove = []  # список на удаление
 
 #  Получаем список локальных дисков
 def get_disks():
+    global disks_dict
     disks = re.findall(r'[A-Z]+:.*$', os.popen('mountvol /').read(), re.MULTILINE)
+    disks_dict = dict.fromkeys(disks)  # ключи создаются в неподходящем формате "c:\\"
+    print(disks_dict)
     return disks
+
+# Возвращает список дисков, на которых обнаружены папки
+def diskList():
+    global archive_disks
+    local_disks_dict = {}
+    for letter in get_disks():
+        if os.path.exists(path = letter + 'VIDEO'):
+            # создаем пары key: None, где ключ это имя диска
+            local_disks_dict = dict.fromkeys(letter)
+            # обновляем глобальный словарь с именами дисков в которых есть архивы
+            archive_disks.update(local_disks_dict)
+        else:
+            continue
+
+''' разобраться в каком виде вызывать video_check()'''
 
 # Проверяем наличие папки VIDEO на обнаруженных дисках
 def video_check():
@@ -18,18 +38,15 @@ def video_check():
             folders = os.listdir(path = letter + 'VIDEO')
             video.extend(folders[::])         
         else:
-            #print(f'На диске {letter} такой папки не существует', '\n')
             continue
+
+'''
+1) добавить функцию по аналогии с oldArchive с ручным выбором диска
+2) добавить вызовы функций из бесконечного цикла пользовательским вводом, типа show archive и тд'''
+
 
 # Получаем список старых архивов
 def oldArchive(month, year):
-    ''' 
-    1) на входе получаем список всех папок архивов
-    2) вводим месяц, до которого требуется удалить все архивы
-    3) формируем список на удаление
-    4) выводим список для визуального подтверждения
-    '''
-    global video
     global for_remove
     # начинаем перебирать элементы в списке архивов
     for i in video:
@@ -43,13 +60,15 @@ def oldArchive(month, year):
 
 '''
 Нужно разобраться с порядком вызова списка и вызова удаления
+1) добавить выбор диска, на котором проводим поиск и готовим список на удаление
+2) 
 '''
 
 # функция проверки ввода
 def getInput():
     while True:
         getInput = input('Введите порядковый номер месяца: ')
-        if getInput.isdigit():
+        if getInput.isdigit() and len(getInput) <= 2:
             return getInput
 
 

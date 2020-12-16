@@ -188,3 +188,4 @@ build/exe.win32-3.6/lib/encodings/iso8859_1.pyc
 build/exe.win32-3.6/lib/encodings/iso2022_kr.pyc
 build/exe.win32-3.6/lib/encodings/iso2022_jp_ext.pyc
 checker.py
+__pycache__
