@@ -1,5 +1,6 @@
 import re
 import os
+from datetime import datetime
 
 
 archive_disks = []  # тут хранится словарь дисков с архивами
@@ -22,9 +23,32 @@ def archiveDir():
     arch_list = dict.fromkeys(archive_disks)  # создаем словарь с ключами по именам дисков
     for keys in arch_list:  # обходим словарь по ключам, обход поэлементный, а не поиндексный!
         for letter in archive_disks:  # обходим внутри диска содержимое директорий в папке VIDEO
-            # video = os.listdir(path = letter + 'VIDEO')
-            # arch_list[keys] = video  # сохраняем значение в виде списка в ключ
             arch_list[keys] = os.listdir(path = letter + 'VIDEO')
+
+# получаем текующую месяц и год
+def get_date():
+    today = datetime.now()
+    month = today.month
+    year = today.year
+    return month, year
+
+
+current_month, current_year = get_date() 
+
+
+# функция определения старого архива, старше 2 месяцев от текущей даты
+'''разобраться с обходом старых архивов'''
+def getLastArchive():
+    for keys in arch_list:  # обходим ключи
+        for dirs in arch_list.get(keys): # обходим значения
+            if int(dirs[3:5]) < current_month and int(dirs[6:8]) == current_year:  # проверка на старость
+                print(f'Есть устаревший архив {dirs}')
+            elif int(dirs[3:5]) == current_month and int(dirs[6:8]) < current_year:
+                print(f'Есть устаревший архив {dirs}')
+
+
+'''здесь будет добавлена фунция получения самого старого архива на каждом из дисков
+'''
 
 
 '''
@@ -32,19 +56,19 @@ def archiveDir():
 2) добавить вызовы функций из бесконечного цикла пользовательским вводом, типа show archive и тд'''
 
 
-# Получаем список старых архивов
-def oldArchive(month, year):
-    global for_remove
-    video = []
-    # начинаем перебирать элементы в списке архивов
-    for i in video:
-        # from video folder dd-mm-yy hh format
-        if int(i[3:5]) < month and int(i[6:8]) <= year:
-        # заносим в список на удаление
-            for_remove.append(i)
-        else:
-            continue
-    print(*for_remove)
+# # Получаем список старых архивов
+# def oldArchive(month, year):
+#     global for_remove
+#     video = []
+#     # начинаем перебирать элементы в списке архивов
+#     for i in video:
+#         # from video folder dd-mm-yy hh format
+#         if int(i[3:5]) < month and int(i[6:8]) <= year:
+#         # заносим в список на удаление
+#             for_remove.append(i)
+#         else:
+#             continue
+#     print(*for_remove)
 
 '''
 Нужно разобраться с порядком вызова списка и вызова удаления
@@ -66,4 +90,4 @@ month = getInput()
 print('Введите последние 2 цифры, обозначающие год: ')
 year = getInput()
 
-oldArchive(month, year)
+# oldArchive(month, year)
