@@ -1,44 +1,31 @@
 import re
 import os
 
-disks_dict = {}  # test dict
-archive_disks = {}  # тут хранится словарь дисков с архивами
-video = []  # тут хранится список всех архивов в папке %\video
+
+archive_disks = []  # тут хранится словарь дисков с архивами
+arch_list = {}  # словарь вида диск: папки
 for_remove = []  # список на удаление
 
-#  Получаем список локальных дисков
+#  Получаем список локальных дисков и удаляем из него элементы, на которых не обнаружен каталог VIDEO
 def get_disks():
-    global disks_dict
-    disks = re.findall(r'[A-Z]+:.*$', os.popen('mountvol /').read(), re.MULTILINE)
-    disks_dict = dict.fromkeys(disks)  # ключи создаются в неподходящем формате "c:\\"
-    print(disks_dict)
-    return disks
-
-# Возвращает список дисков, на которых обнаружены папки
-def diskList():
     global archive_disks
-    local_disks_dict = {}
-    for letter in get_disks():
-        if os.path.exists(path = letter + 'VIDEO'):
-            # создаем пары key: None, где ключ это имя диска
-            local_disks_dict = dict.fromkeys(letter)
-            # обновляем глобальный словарь с именами дисков в которых есть архивы
-            archive_disks.update(local_disks_dict)
+    archive_disks = re.findall(r'[A-Z]+:.*$', os.popen('mountvol /').read(), re.MULTILINE)
+    for letter in range(len(archive_disks)):
+        if not os.path.exists(path = archive_disks[letter] + 'VIDEO'):
+            archive_disks.pop(letter)
         else:
             continue
 
-''' разобраться в каком виде вызывать video_check()'''
+# тут мы должны перебрать все диски и составить список внутри директории VIDEO, для этого создаем словарь из имен дисков
+def archiveDir():
+    global arch_list
+    arch_list = dict.fromkeys(archive_disks)  # создаем словарь с ключами по именам дисков
+    for keys in arch_list:  # обходим словарь по ключам, обход поэлементный, а не поиндексный!
+        for letter in archive_disks:  # обходим внутри диска содержимое директорий в папке VIDEO
+            # video = os.listdir(path = letter + 'VIDEO')
+            # arch_list[keys] = video  # сохраняем значение в виде списка в ключ
+            arch_list[keys] = os.listdir(path = letter + 'VIDEO')
 
-# Проверяем наличие папки VIDEO на обнаруженных дисках
-def video_check():
-    global video
-    for letter in get_disks():
-        if os.path.exists(path = letter + 'VIDEO'):
-            print(f'Список объектов внутри каталога: {letter}VIDEO\\', os.listdir(path = letter + "VIDEO"), '\n')
-            folders = os.listdir(path = letter + 'VIDEO')
-            video.extend(folders[::])         
-        else:
-            continue
 
 '''
 1) добавить функцию по аналогии с oldArchive с ручным выбором диска
@@ -48,6 +35,7 @@ def video_check():
 # Получаем список старых архивов
 def oldArchive(month, year):
     global for_remove
+    video = []
     # начинаем перебирать элементы в списке архивов
     for i in video:
         # from video folder dd-mm-yy hh format
