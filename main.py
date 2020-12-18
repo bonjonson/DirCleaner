@@ -32,20 +32,25 @@ def get_date():
     year = today.year
     return month, year
 
-
 current_month, current_year = get_date() 
 
-
-# функция определения старого архива, старше 2 месяцев от текущей даты
-'''разобраться с обходом старых архивов'''
+''' функция определения старого архива, старше 2 месяцев от текущей даты
+Выводим пользователю информацию о самых старых архивах на дисках'''
 def getLastArchive():
+    most_last = []
+    global for_remove
     for keys in arch_list:  # обходим ключи
         for dirs in arch_list.get(keys): # обходим значения
-            if int(dirs[3:5]) < current_month and int(dirs[6:8]) == current_year:  # проверка на старость
-                print(f'Есть устаревший архив {dirs}')
-            elif int(dirs[3:5]) == current_month and int(dirs[6:8]) < current_year:
-                print(f'Есть устаревший архив {dirs}')
-
+            if current_year % 100 - int(dirs[6:8]) > 0:
+                # выполняем преобразование имени папки в формат yymm
+                most_last.append(str(dirs[6:8] + dirs[3:5]))
+                # тут же заносим эти папки в список на удаление
+                for_remove.append(dirs)
+            elif current_year % 100 - int(dirs[6:8]) == 0 and current_month - int(dirs[3:5]) >= 2:
+                most_last.append(str(dirs[6:8] + dirs[3:5]))
+                for_remove.append(dirs)
+        print(f'Самый старый архив на диске {keys}: {min(most_last)[2:4]}-{min(most_last)[:2]}')
+        print(f'Список архивов на удаление на диске {keys}: {for_remove}')
 
 '''здесь будет добавлена фунция получения самого старого архива на каждом из дисков
 '''
