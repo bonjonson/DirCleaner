@@ -48,7 +48,7 @@ def getLastArchive():
                     most_last.append(str(dirs[6:8] + dirs[3:5]))
                     # тут же заносим эти папки в список на удаление
                     for_remove.append(dirs)
-                elif current_year % 100 - int(dirs[6:8]) == 0 and current_month - int(dirs[3:5]) >= 2:
+                elif current_year % 100 - int(dirs[6:8]) == 0 and current_month - int(dirs[3:5]) >= 3:
                     most_last.append(str(dirs[6:8] + dirs[3:5]))
                     for_remove.append(dirs)
             else:
