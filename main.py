@@ -22,7 +22,6 @@ def archiveDir():
     global arch_list
     arch_list = dict.fromkeys(archive_disks)  # создаем словарь с ключами по именам дисков
     for keys in arch_list:  # обходим словарь по ключам, обход поэлементный, а не поиндексный!
-        # for letter in archive_disks:  # обходим внутри диска содержимое директорий в папке VIDEO
         arch_list[keys] = os.listdir(path = keys + 'VIDEO')
 
 # получаем текующую месяц и год
@@ -50,48 +49,41 @@ def getLastArchive():
                 most_last.append(str(dirs[6:8] + dirs[3:5]))
                 for_remove.append(dirs)
         print(f'Самый старый архив на диске {keys}: {min(most_last)[2:4]}-{min(most_last)[:2]}')
-        arch_list[keys] = for_remove  #словарь вида диск: каталоги на удаление
+        arch_list[keys] = for_remove  # словарь вида диск: каталоги на удаление
         for_remove = []  # обнуляем список на удаление 
     print(f'Список архивов на удаление на диске {arch_list}')
 
 
-'''
-1) добавить функцию по аналогии с oldArchive с ручным выбором диска
-2) добавить вызовы функций из бесконечного цикла пользовательским вводом, типа show archive и тд'''
+# функция рекурсивного удаления старых архивов
+def oldArchDel():
+    for keys in arch_list:
+        for dirs in arch_list.get(keys):
+            path = keys + 'test\\' + dirs
+            print(path)
+            try:
+                if os.path.exists(path = path) and os.path.isdir(path):
+                    shutil.rmtree(path)
+            except:
+                continue
+
+# проверка наличия системных папок INDEX, PROTECTED, INDEX_DATA, файл Settings.xml
+def sysFoldDel():
+    sysfold = ['INDEX', 'PROTECTED', 'INDEX_DATA', 'Settings.xml']
+    for keys in arch_list:
+        for folds in sysfold:
+            path = keys + 'VIDEO\\' + folds
+            try:
+                if os.path.isfile(path):
+                    os.unlink(path)
+                elif os.path.isdir(path):
+                    shutil.rmtree(path)
+            except:
+                continue
 
 
-# # Получаем список старых архивов
-# def oldArchive(month, year):
-#     global for_remove
-#     video = []
-#     # начинаем перебирать элементы в списке архивов
-#     for i in video:
-#         # from video folder dd-mm-yy hh format
-#         if int(i[3:5]) < month and int(i[6:8]) <= year:
-#         # заносим в список на удаление
-#             for_remove.append(i)
-#         else:
-#             continue
-#     print(*for_remove)
-
-'''
-Нужно разобраться с порядком вызова списка и вызова удаления
-1) добавить выбор диска, на котором проводим поиск и готовим список на удаление
-2) 
-'''
-
-# функция проверки ввода
-def getInput():
-    while True:
-        getInput = input('Введите порядковый номер месяца: ')
-        if getInput.isdigit() and len(getInput) <= 2:
-            return getInput
-
-
-# # Запрашиваем ввод от пользователя
-# print('Введите порядковый номер месяца: ')
-# month = getInput()
-# print('Введите последние 2 цифры, обозначающие год: ')
-# year = getInput()
-
-# # oldArchive(month, year)
+# # функция проверки ввода
+# def getInput():
+#     while True:
+#         getInput = input('Введите порядковый номер месяца: ')
+#         if getInput.isdigit() and len(getInput) <= 2:
+#             return getInput
