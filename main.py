@@ -1,11 +1,13 @@
 import re
 import os
+import shutil
 from datetime import datetime
 
 
 archive_disks = []  # тут хранится словарь дисков с архивами
 arch_list = {}  # словарь вида диск: папки
 for_remove = []  # список на удаление
+sysfold = ['INDEX', 'PROTECTED', 'INDEX_DATA', 'Settings.xml']  # список системных файлов и папок
 
 #  Получаем список локальных дисков и удаляем из него элементы, на которых не обнаружен каталог VIDEO
 def get_disks():
@@ -40,14 +42,17 @@ def getLastArchive():
     global for_remove
     for keys in arch_list:  # обходим ключи
         for dirs in arch_list.get(keys): # обходим значения
-            if current_year % 100 - int(dirs[6:8]) > 0:
-                # выполняем преобразование имени папки в формат yymm
-                most_last.append(str(dirs[6:8] + dirs[3:5]))
-                # тут же заносим эти папки в список на удаление
-                for_remove.append(dirs)
-            elif current_year % 100 - int(dirs[6:8]) == 0 and current_month - int(dirs[3:5]) >= 2:
-                most_last.append(str(dirs[6:8] + dirs[3:5]))
-                for_remove.append(dirs)
+            if dirs not in sysfold:
+                if current_year % 100 - int(dirs[6:8]) > 0:
+                    # выполняем преобразование имени папки в формат yymm
+                    most_last.append(str(dirs[6:8] + dirs[3:5]))
+                    # тут же заносим эти папки в список на удаление
+                    for_remove.append(dirs)
+                elif current_year % 100 - int(dirs[6:8]) == 0 and current_month - int(dirs[3:5]) >= 2:
+                    most_last.append(str(dirs[6:8] + dirs[3:5]))
+                    for_remove.append(dirs)
+            else:
+                continue
         print(f'Самый старый архив на диске {keys}: {min(most_last)[2:4]}-{min(most_last)[:2]}')
         arch_list[keys] = for_remove  # словарь вида диск: каталоги на удаление
         for_remove = []  # обнуляем список на удаление 
@@ -58,27 +63,28 @@ def getLastArchive():
 def oldArchDel():
     for keys in arch_list:
         for dirs in arch_list.get(keys):
-            path = keys + 'test\\' + dirs
-            print(path)
+            arch_path = keys + 'VIDEO\\' + dirs
+            print(arch_path)
             try:
-                if os.path.exists(path = path) and os.path.isdir(path):
-                    shutil.rmtree(path)
+                if os.path.isdir(arch_path):
+                    shutil.rmtree(arch_path)
             except:
                 continue
 
 # проверка наличия системных папок INDEX, PROTECTED, INDEX_DATA, файл Settings.xml
 def sysFoldDel():
-    sysfold = ['INDEX', 'PROTECTED', 'INDEX_DATA', 'Settings.xml']
     for keys in arch_list:
         for folds in sysfold:
-            path = keys + 'VIDEO\\' + folds
+            sys_path = keys + 'VIDEO\\' + folds
+            print(sys_path)
             try:
-                if os.path.isfile(path):
-                    os.unlink(path)
-                elif os.path.isdir(path):
-                    shutil.rmtree(path)
+                if os.path.isfile(sys_path):
+                    os.unlink(sys_path)
+                elif os.path.isdir(sys_path):
+                    shutil.rmtree(sys_path)
             except:
                 continue
+
 get_disks()
 archiveDir()
 getLastArchive()
