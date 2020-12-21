@@ -22,8 +22,8 @@ def archiveDir():
     global arch_list
     arch_list = dict.fromkeys(archive_disks)  # создаем словарь с ключами по именам дисков
     for keys in arch_list:  # обходим словарь по ключам, обход поэлементный, а не поиндексный!
-        for letter in archive_disks:  # обходим внутри диска содержимое директорий в папке VIDEO
-            arch_list[keys] = os.listdir(path = letter + 'VIDEO')
+        # for letter in archive_disks:  # обходим внутри диска содержимое директорий в папке VIDEO
+        arch_list[keys] = os.listdir(path = keys + 'VIDEO')
 
 # получаем текующую месяц и год
 def get_date():
@@ -35,7 +35,7 @@ def get_date():
 current_month, current_year = get_date() 
 
 ''' функция определения старого архива, старше 2 месяцев от текущей даты
-Выводим пользователю информацию о самых старых архивах на дисках'''
+Выводим пользователю информацию о самых старых архивах на дисках и сразу переопределяем словарь, оставляя только список на удаление'''
 def getLastArchive():
     most_last = []
     global for_remove
@@ -50,10 +50,9 @@ def getLastArchive():
                 most_last.append(str(dirs[6:8] + dirs[3:5]))
                 for_remove.append(dirs)
         print(f'Самый старый архив на диске {keys}: {min(most_last)[2:4]}-{min(most_last)[:2]}')
-        print(f'Список архивов на удаление на диске {keys}: {for_remove}')
-
-'''здесь будет добавлена фунция получения самого старого архива на каждом из дисков
-'''
+        arch_list[keys] = for_remove  #словарь вида диск: каталоги на удаление
+        for_remove = []  # обнуляем список на удаление 
+    print(f'Список архивов на удаление на диске {arch_list}')
 
 
 '''
@@ -89,10 +88,10 @@ def getInput():
             return getInput
 
 
-# Запрашиваем ввод от пользователя
-print('Введите порядковый номер месяца: ')
-month = getInput()
-print('Введите последние 2 цифры, обозначающие год: ')
-year = getInput()
+# # Запрашиваем ввод от пользователя
+# print('Введите порядковый номер месяца: ')
+# month = getInput()
+# print('Введите последние 2 цифры, обозначающие год: ')
+# year = getInput()
 
-# oldArchive(month, year)
+# # oldArchive(month, year)
