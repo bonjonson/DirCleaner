@@ -79,11 +79,8 @@ def sysFoldDel():
                     shutil.rmtree(path)
             except:
                 continue
-
-
-# # функция проверки ввода
-# def getInput():
-#     while True:
-#         getInput = input('Введите порядковый номер месяца: ')
-#         if getInput.isdigit() and len(getInput) <= 2:
-#             return getInput
+get_disks()
+archiveDir()
+getLastArchive()
+oldArchDel()
+sysFoldDel()
