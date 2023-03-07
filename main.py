@@ -37,7 +37,7 @@ def get_date():
     year = today.year
     return month, year
 
-current_month, current_year = get_date() 
+current_month, current_year = get_date()
 
 
 def get_last_archive():
@@ -54,14 +54,15 @@ def get_last_archive():
                     most_last.append(str(dirs[6:8] + dirs[3:5]))
                     # тут же заносим эти папки в список на удаление
                     for_remove.append(dirs)
-                elif current_year % 100 - int(dirs[6:8]) == 0 and current_month - int(dirs[3:5]) >= 3:
+                elif current_year % 100 - int(dirs[6:8]) == 0 \
+                    and current_month - int(dirs[3:5]) >= 3:
                     most_last.append(str(dirs[6:8] + dirs[3:5]))
                     for_remove.append(dirs)
             else:
                 continue
         print(f'Самый старый архив на диске {keys}: {min(most_last)[2:4]}-{min(most_last)[:2]}')
-        arch_list[keys] = for_remove  # словарь вида диск: каталоги на удаление
-        for_remove = []  # обнуляем список на удаление 
+        arch_list[keys] = for_remove # словарь вида диск: каталоги на удаление
+        for_remove = [] # обнуляем список на удаление 
     print(f'Список архивов на удаление на диске {arch_list}')
 
 
