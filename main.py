@@ -14,22 +14,23 @@ sysfold = ['INDEX', 'PROTECTED', 'INDEX_DATA', 'Settings.xml']  # список �
 def get_disks():
     '''Получаем список локальных дисков и удаляем из него элементы, 
     на которых не обнаружен каталог VIDEO'''
-    global archive_disks
-    archive_disks = re.findall(r'[A-Z]+:.*$', os.popen('mountvol /').read(), re.MULTILINE)
-    for letter in range(len(archive_disks)):
+    arc_disks = re.findall(r'[A-Z]+:.*$', os.popen('mountvol /').read(), re.MULTILINE)
+    vol_numbers = len(archive_disks)
+    for letter in range(vol_numbers):
         if not os.path.exists(path = archive_disks[letter] + 'VIDEO'):
             archive_disks.pop(letter)
         else:
             continue
+    return arc_disks
 
 
 def archive_dir():
     '''Функция перебора все диски и составить список внутри директории VIDEO, 
     для этого создаем словарь из имен дисков'''
-    global arch_list
-    arch_list = dict.fromkeys(archive_disks)  # создаем словарь с ключами по именам дисков
+    arc_list = dict.fromkeys(archive_disks)  # создаем словарь с ключами по именам дисков
     for keys in arch_list:  # обходим словарь по ключам, обход поэлементный, а не поиндексный!
         arch_list[keys] = os.listdir(path = keys + 'VIDEO')
+    return arc_list
 
 
 def get_date():
@@ -42,14 +43,14 @@ def get_date():
 current_month, current_year = get_date()
 
 
-def get_last_archive():
+def get_last_archive(arc_list):
     ''' функция определения старого архива, старше 2 месяцев от текущей даты
     Выводим пользователю информацию о самых старых архивах на дисках и сразу 
     переопределяем словарь, оставляя только список на удаление'''
     most_last = []
     global for_remove
     for keys in arch_list:  # обходим ключи
-        for dirs in arch_list.get(keys): # обходим значения
+        for dirs in arc_list.get(keys): # обходим значения
             if dirs not in sysfold:
                 if current_year % 100 - int(dirs[6:8]) > 0:
                     # выполняем преобразование имени папки в формат yymm
@@ -64,7 +65,7 @@ def get_last_archive():
                 continue
         print(f'Самый старый архив на диске {keys}: {min(most_last)[2:4]}-{min(most_last)[:2]}')
         arch_list[keys] = for_remove # словарь вида диск: каталоги на удаление
-        for_remove = [] # обнуляем список на удаление 
+        for_remove = [] # обнуляем список на удаление
     print(f'Список архивов на удаление на диске {arch_list}')
 
 
@@ -77,7 +78,7 @@ def old_arch_del():
             try:
                 if os.path.isdir(arch_path):
                     shutil.rmtree(arch_path)
-            except:
+            except FileNotFoundError:
                 continue
 
 
@@ -92,11 +93,11 @@ def sys_fold_del():
                     os.unlink(sys_path)
                 elif os.path.isdir(sys_path):
                     shutil.rmtree(sys_path)
-            except:
+            except FileNotFoundError:
                 continue
 
-get_disks()
-archive_dir()
+archive_disks = get_disks()
+arch_list = archive_dir()
 get_last_archive()
 old_arch_del()
 sys_fold_del()
