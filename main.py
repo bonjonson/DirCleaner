@@ -1,3 +1,4 @@
+"""Небольшая утилита для удаления неактуальных директорий"""
 import re
 import os
 import shutil
@@ -30,8 +31,9 @@ def archive_dir():
     for keys in arch_list:  # обходим словарь по ключам, обход поэлементный, а не поиндексный!
         arch_list[keys] = os.listdir(path = keys + 'VIDEO')
 
-# получаем текующую месяц и год
+
 def get_date():
+    """получаем текующую месяц и год"""
     today = datetime.now()
     month = today.month
     year = today.year
@@ -66,8 +68,8 @@ def get_last_archive():
     print(f'Список архивов на удаление на диске {arch_list}')
 
 
-# функция рекурсивного удаления старых архивов
 def old_arch_del():
+    """функция рекурсивного удаления старых архивов"""
     for keys in arch_list:
         for dirs in arch_list.get(keys):
             arch_path = keys + 'VIDEO\\' + dirs
@@ -78,8 +80,9 @@ def old_arch_del():
             except:
                 continue
 
-# проверка наличия системных папок INDEX, PROTECTED, INDEX_DATA, файл Settings.xml
+
 def sys_fold_del():
+    """проверка наличия системных папок INDEX, PROTECTED, INDEX_DATA, файл Settings.xml"""
     for keys in arch_list:
         for folds in sysfold:
             sys_path = keys + 'VIDEO\\' + folds
