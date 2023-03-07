@@ -9,8 +9,10 @@ arch_list = {}  # словарь вида диск: папки
 for_remove = []  # список на удаление
 sysfold = ['INDEX', 'PROTECTED', 'INDEX_DATA', 'Settings.xml']  # список системных файлов и папок
 
-#  Получаем список локальных дисков и удаляем из него элементы, на которых не обнаружен каталог VIDEO
+
 def get_disks():
+    '''Получаем список локальных дисков и удаляем из него элементы, 
+    на которых не обнаружен каталог VIDEO'''
     global archive_disks
     archive_disks = re.findall(r'[A-Z]+:.*$', os.popen('mountvol /').read(), re.MULTILINE)
     for letter in range(len(archive_disks)):
@@ -19,8 +21,10 @@ def get_disks():
         else:
             continue
 
-# тут мы должны перебрать все диски и составить список внутри директории VIDEO, для этого создаем словарь из имен дисков
-def archiveDir():
+
+def archive_dir():
+    '''Функция перебора все диски и составить список внутри директории VIDEO, 
+    для этого создаем словарь из имен дисков'''
     global arch_list
     arch_list = dict.fromkeys(archive_disks)  # создаем словарь с ключами по именам дисков
     for keys in arch_list:  # обходим словарь по ключам, обход поэлементный, а не поиндексный!
@@ -35,9 +39,11 @@ def get_date():
 
 current_month, current_year = get_date() 
 
-''' функция определения старого архива, старше 2 месяцев от текущей даты
-Выводим пользователю информацию о самых старых архивах на дисках и сразу переопределяем словарь, оставляя только список на удаление'''
-def getLastArchive():
+
+def get_last_archive():
+    ''' функция определения старого архива, старше 2 месяцев от текущей даты
+    Выводим пользователю информацию о самых старых архивах на дисках и сразу 
+    переопределяем словарь, оставляя только список на удаление'''
     most_last = []
     global for_remove
     for keys in arch_list:  # обходим ключи
@@ -60,7 +66,7 @@ def getLastArchive():
 
 
 # функция рекурсивного удаления старых архивов
-def oldArchDel():
+def old_arch_del():
     for keys in arch_list:
         for dirs in arch_list.get(keys):
             arch_path = keys + 'VIDEO\\' + dirs
@@ -72,7 +78,7 @@ def oldArchDel():
                 continue
 
 # проверка наличия системных папок INDEX, PROTECTED, INDEX_DATA, файл Settings.xml
-def sysFoldDel():
+def sys_fold_del():
     for keys in arch_list:
         for folds in sysfold:
             sys_path = keys + 'VIDEO\\' + folds
@@ -86,7 +92,7 @@ def sysFoldDel():
                 continue
 
 get_disks()
-archiveDir()
-getLastArchive()
-oldArchDel()
-sysFoldDel()
+archive_dir()
+get_last_archive()
+old_arch_del()
+sys_fold_del()
